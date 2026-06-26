@@ -5,7 +5,7 @@ const LEAD_TYPES = new Set(['consultation', 'order', 'finance']);
 const MIME = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', avif: 'image/avif' };
 const SETTINGS_DEFAULTS = {
   store_name: 'TÂM AN', store_location: 'NOMURA • HẢI PHÒNG', hotline: '0856 262 886',
-  zalo_link: 'https://zalo.me/0856262886', contact_email: '',
+  zalo_link: 'https://zalo.me/0856262886', tiktok_link: '', youtube_link: '', contact_email: '',
   address: 'Cổng phụ KCN Nomura, Hải Phòng',
   map_link: 'https://maps.google.com/?q=Cổng+phụ+KCN+Nomura+Hải+Phòng',
   map_embed: 'https://www.google.com/maps?q=C%E1%BB%95ng%20ph%E1%BB%A5%20KCN%20Nomura%20H%E1%BA%A3i%20Ph%C3%B2ng&output=embed',
@@ -13,8 +13,12 @@ const SETTINGS_DEFAULTS = {
   topline: 'TRẢ GÓP LINH HOẠT • HỒ SƠ NHANH • XE MỚI VÀ XE CŨ TUYỂN CHỌN',
   hero_eyebrow: 'Xe máy Tâm An Nomura', hero_title: 'Chọn xe ưng ý.', hero_highlight: 'Lên đường an tâm.',
   hero_description: 'Xe mới chính hãng, xe cũ tuyển chọn. Hỗ trợ trả góp nhanh, thủ tục rõ ràng và chăm sóc tận tâm tại Hải Phòng.',
-  hero_image: '', inventory_eyebrow: 'Kho xe Tâm An', inventory_title: 'Xe đang chờ bạn cầm lái.',
-  inventory_description: 'Thông tin xe, giá và trạng thái được cập nhật trực tiếp từ showroom.',
+  hero_image: '', inventory_eyebrow: 'Kho xe Tâm An', inventory_title: 'Xe đang chờ\nbạn cầm lái.',
+  inventory_description: 'Lướt ngang để xem toàn bộ xe. Chạm vào xe để xem thông tin và gửi yêu cầu tư vấn.',
+  promo_eyebrow: 'Ưu đãi tại showroom', promo_title: 'Khuyến mại rõ ràng.\nQuà tặng thiết thực.',
+  promo_description: 'Tùy từng mẫu xe và thời điểm, Tâm An có chương trình hỗ trợ trả góp, phụ kiện hoặc ưu đãi khi đổi xe.',
+  promo_button_text: 'Xem ưu đãi', promo_button_link: '/tra-gop',
+  delivery_title: 'Hỗ trợ giao xe tận nơi', delivery_description: 'Liên hệ để Tâm An kiểm tra khu vực giao xe, thời gian nhận xe và chi phí cụ thể.',
   cta_eyebrow: 'TÂM AN NOMURA', cta_title: 'Xe đã chọn xong.\nChỉ còn cuộc gọi của bạn.'
 };
 let schemaPromise;
