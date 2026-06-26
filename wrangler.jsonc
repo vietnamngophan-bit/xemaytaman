@@ -13,7 +13,7 @@
     {
       "binding": "DB",
       "database_name": "tam-an-db",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
+      "database_id": "e297a58a-c1a6-40fe-a62e-dda8553889d8",
       "migrations_dir": "./migrations"
     }
   ],
