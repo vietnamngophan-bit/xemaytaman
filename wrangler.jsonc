@@ -22,8 +22,5 @@
       "binding": "IMAGES",
       "bucket_name": "tam-an-images"
     }
-  ],
-  "secrets": {
-    "required": ["ADMIN_PASSWORD", "SESSION_SECRET"]
-  }
+  ]
 }
