@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#bf0915" />
+    <title>Xe Máy Tâm An Nomura | Xe mới & xe cũ Hải Phòng</title>
+    <link rel="preload" as="image" href="/assets/vision-red-bike.jpg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="topline">Trả góp linh hoạt • Hồ sơ nhanh • Xe mới và xe cũ tuyển chọn</div>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="#top" aria-label="Xe Máy Tâm An Nomura">
+        <span class="brand-mark brand-logo-mark"><img src="/assets/tam-an-logo.png" alt="Logo Tâm An" /></span>
+        <span class="brand-copy"><strong>TÂM AN</strong><small>NOMURA • HẢI PHÒNG</small></span>
+      </a>
+      <nav class="main-nav" aria-label="Điều hướng chính">
+        <a href="#xe">Xe đang bán</a>
+        <a href="#dich-vu">Dịch vụ</a>
+        <a href="#showroom">Showroom</a>
+      </nav>
+      <div class="header-actions">
+        <a class="phone-link" href="tel:0856262886">0856 262 886</a>
+        <button class="menu-button" type="button" aria-label="Mở menu" data-menu-toggle><span></span><span></span></button>
+      </div>
+    </header>
+
+    <main id="storefront">
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-wrap container">
+          <div class="hero-copy reveal">
+            <p class="eyebrow">Xe máy Tâm An Nomura</p>
+            <h1>Chọn xe <em>ưng ý</em>.<br />Lên đường <em>an tâm</em>.</h1>
+            <p class="hero-description">Xe mới chính hãng, xe cũ tuyển chọn. Hỗ trợ trả góp nhanh, thủ tục rõ ràng và chăm sóc tận tâm tại Hải Phòng.</p>
+            <div class="hero-buttons">
+              <a class="button button-primary" href="#xe">Xem xe đang có <span>↘</span></a>
+              <a class="button button-ghost" href="tel:0856262886">Gọi tư vấn</a>
+            </div>
+            <div class="hero-points">
+              <span><b>01</b> Xe rõ nguồn gốc</span>
+              <span><b>02</b> Trả góp linh hoạt</span>
+              <span><b>03</b> Hỗ trợ sau bán</span>
+            </div>
+          </div>
+          <div class="hero-visual reveal reveal-delay">
+            <div class="hero-orbit orbit-one"></div>
+            <div class="hero-orbit orbit-two"></div>
+            <p class="hero-figure-caption">TÂM AN<br /><span>RIDE WITH CONFIDENCE</span></p>
+            <img src="/assets/vision-red-bike.jpg" alt="Xe Honda Vision đỏ tại Tâm An" class="hero-bike" />
+            <div class="hero-offer-card"><span>Trả góp từ</span><strong>5TR</strong><small>Nhận xe sau 15 phút*</small></div>
+          </div>
+        </div>
+        <div class="hero-bottom container"><span>HONDA • YAMAHA • SUZUKI • VESPA • XE CŨ TUYỂN CHỌN</span><a href="#showroom">KCN NOMURA, HẢI PHÒNG <b>↓</b></a></div>
+      </section>
+
+      <section class="trust-strip">
+        <div class="container trust-grid">
+          <article><span class="trust-icon">✦</span><div><strong>Xe mới 100%</strong><small>Nhập chính hãng</small></div></article>
+          <article><span class="trust-icon">✓</span><div><strong>Hồ sơ đầy đủ</strong><small>Rõ ràng, hợp lệ</small></div></article>
+          <article><span class="trust-icon">◈</span><div><strong>Bảo hành hỗ trợ</strong><small>Chăm sóc sau bán</small></div></article>
+          <article><span class="trust-icon">↗</span><div><strong>Trả góp nhanh</strong><small>Thủ tục gọn nhẹ</small></div></article>
+        </div>
+      </section>
+
+      <section class="inventory section" id="xe">
+        <div class="container">
+          <div class="section-heading reveal">
+            <div>
+              <p class="eyebrow dark">Kho xe Tâm An</p>
+              <h2>Xe đang chờ <em>bạn cầm lái.</em></h2>
+            </div>
+            <p>Thông tin xe, giá và trạng thái được cập nhật trực tiếp từ showroom.</p>
+          </div>
+
+          <div class="filters reveal" aria-label="Lọc xe">
+            <div class="filter-tabs" role="tablist">
+              <button class="filter-tab active" data-filter="all">Tất cả</button>
+              <button class="filter-tab" data-filter="in_stock">Có sẵn</button>
+              <button class="filter-tab" data-filter="incoming">Sắp về</button>
+              <button class="filter-tab" data-filter="new">Xe mới</button>
+              <button class="filter-tab" data-filter="used">Xe cũ</button>
+            </div>
+            <span id="bike-count" class="bike-count"></span>
+          </div>
+          <div class="bike-grid" id="bike-grid" aria-live="polite">
+            <div class="loading-card">Đang tải kho xe...</div>
+          </div>
+          <div class="inventory-action reveal"><a href="tel:0856262886" class="text-link">Chưa thấy mẫu xe cần tìm? Gọi Tâm An để được tư vấn <span>→</span></a></div>
+        </div>
+      </section>
+
+      <section class="services section" id="dich-vu">
+        <div class="container services-wrap">
+          <div class="service-promo reveal">
+            <p class="eyebrow">Làm thủ tục đơn giản</p>
+            <h2>Muốn mua xe,<br /><em>đừng phải chờ lâu.</em></h2>
+            <p>Đội ngũ Tâm An hỗ trợ chọn xe, tư vấn trả góp, đổi xe và hoàn thiện hồ sơ nhanh ngay tại cửa hàng.</p>
+            <a class="button button-light" href="tel:0856262886">Tư vấn trả góp</a>
+          </div>
+          <div class="service-list reveal reveal-delay">
+            <article><span>01</span><div><h3>Trả góp linh hoạt</h3><p>Tư vấn khoản trả trước phù hợp nhu cầu, hồ sơ gọn gàng.</p></div><i>↗</i></article>
+            <article><span>02</span><div><h3>Thu xe cũ đổi xe mới</h3><p>Định giá rõ ràng, hỗ trợ lên đời xe nhanh chóng.</p></div><i>↗</i></article>
+            <article><span>03</span><div><h3>Bảo dưỡng & phụ kiện</h3><p>Đồng hành cùng bạn sau khi nhận xe với dịch vụ tận tâm.</p></div><i>↗</i></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="showroom section" id="showroom">
+        <div class="container showroom-wrap">
+          <div class="showroom-photo reveal"><img src="/assets/showroom.jpg" alt="Mặt tiền showroom Xe Máy Tâm An Nomura" /><span class="photo-note">Tâm An Nomura<br /><small>HẢI PHÒNG</small></span></div>
+          <div class="showroom-copy reveal reveal-delay">
+            <p class="eyebrow dark">Ghé Tâm An</p>
+            <h2>Chạm xe thật,<br /><em>chọn xe đúng.</em></h2>
+            <p>Ghé showroom để xem xe, lái thử và nhận tư vấn trực tiếp từ đội ngũ Tâm An.</p>
+            <div class="contact-block"><span>Địa chỉ</span><strong>Cổng phụ KCN Nomura,<br />Hải Phòng</strong></div>
+            <div class="contact-block"><span>Hotline</span><a href="tel:0856262886">0856 262 886</a></div>
+            <div class="showroom-actions"><a class="button button-primary" href="https://maps.google.com/?q=Cổng+phụ+KCN+Nomura+Hải+Phòng" target="_blank" rel="noreferrer">Chỉ đường tới cửa hàng</a></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container cta-wrap reveal">
+          <p class="eyebrow">TÂM AN NOMURA</p>
+          <h2>Xe đã chọn xong.<br /><em>Chỉ còn cuộc gọi của bạn.</em></h2>
+          <a href="tel:0856262886" class="cta-number">0856 262 886 <span>↗</span></a>
+        </div>
+      </section>
+    </main>
+
+    <section class="admin-shell" id="admin-shell" hidden>
+      <header class="admin-header"><a class="brand" href="/"><span class="brand-mark brand-logo-mark"><img src="/assets/tam-an-logo.png" alt="Logo Tâm An" /></span><span class="brand-copy"><strong>TÂM AN</strong><small>QUẢN TRỊ SHOWROOM</small></span></a><a class="admin-back" href="/">← Về website</a></header>
+      <main class="admin-main">
+        <section class="login-card" id="login-card">
+          <p class="eyebrow dark">Khu vực nội bộ</p><h1>Đăng nhập quản trị</h1><p>Quản lý sản phẩm, ảnh và trạng thái xe tại showroom.</p>
+          <form id="login-form"><label>Mật khẩu quản trị<input type="password" id="admin-password" autocomplete="current-password" required placeholder="Nhập mật khẩu" /></label><button class="button button-primary" type="submit">Đăng nhập <span>→</span></button><p class="form-message" id="login-message"></p></form>
+        </section>
+        <section class="admin-dashboard" id="admin-dashboard" hidden>
+          <div class="admin-heading"><div><p class="eyebrow dark">Bảng điều khiển</p><h1>Kho xe Tâm An</h1></div><div class="dashboard-actions"><button class="button button-outline" id="logout-button">Đăng xuất</button><button class="button button-primary" id="add-bike-button">+ Thêm xe</button></div></div>
+          <div class="admin-stat-grid" id="admin-stats"></div>
+          <div class="admin-table-wrap"><table><thead><tr><th>Mẫu xe</th><th>Phân loại</th><th>Giá</th><th>Trạng thái</th><th>Cập nhật</th><th></th></tr></thead><tbody id="admin-bikes"></tbody></table></div>
+        </section>
+      </main>
+    </section>
+
+    <div class="modal" id="bike-modal" hidden aria-hidden="true">
+      <div class="modal-backdrop" data-modal-close></div>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <header><div><p class="eyebrow dark">Quản lý xe</p><h2 id="modal-title">Thêm xe mới</h2></div><button class="modal-close" type="button" data-modal-close aria-label="Đóng">×</button></header>
+        <form id="bike-form" class="bike-form">
+          <input type="hidden" name="id" />
+          <div class="form-grid"><label>Tên xe*<input name="name" required placeholder="Ví dụ: Honda Vision 2026" /></label><label>Hãng xe<input name="brand" placeholder="Honda" /></label><label>Phân loại<select name="category"><option value="new">Xe mới</option><option value="used">Xe cũ</option></select></label><label>Trạng thái<select name="status"><option value="in_stock">Còn hàng</option><option value="incoming">Sắp về</option><option value="reserved">Đang giữ xe</option><option value="sold">Đã bán</option></select></label><label>Giá bán (VNĐ)*<input name="price" required inputmode="numeric" type="number" min="0" /></label><label>Giá niêm yết (VNĐ)<input name="msrp" inputmode="numeric" type="number" min="0" /></label><label>Năm sản xuất<input name="year" type="number" min="1990" max="2100" /></label><label>Số km đã đi<input name="mileage" type="number" min="0" /></label><label>Dung tích máy<input name="engine" placeholder="Ví dụ: 110cc" /></label><label>Màu xe<input name="color" placeholder="Ví dụ: Đỏ đô" /></label><label>Hồ sơ / giấy tờ<input name="documents" placeholder="Ví dụ: Hồ sơ đầy đủ" /></label><label>Thứ tự hiển thị<input name="sort_order" type="number" value="0" /></label></div>
+          <label class="full-label">Mô tả<textarea name="description" rows="4" placeholder="Mô tả ngắn về xe, chính sách, tình trạng..."></textarea></label>
+          <label class="check-label"><input name="featured" type="checkbox" /> Hiển thị xe nổi bật</label>
+          <div class="image-upload"><label class="upload-button">+ Tải ảnh xe<input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,image/avif" multiple /></label><small>Tối đa 8MB/ảnh. Nên dùng ảnh dọc hoặc ngang rõ xe.</small><div id="image-preview" class="image-preview"></div></div>
+          <footer><p class="form-message" id="bike-message"></p><button type="button" class="button button-outline" data-modal-close>Huỷ</button><button class="button button-primary" type="submit">Lưu xe <span>→</span></button></footer>
+        </form>
+      </section>
+    </div>
+
+    <div class="floating-contact"><a href="tel:0856262886" aria-label="Gọi hotline">☎</a><a href="https://zalo.me/0856262886" target="_blank" rel="noreferrer" aria-label="Nhắn Zalo">Z</a></div>
+    <footer class="site-footer"><div class="container footer-wrap"><p>© <span id="year-now"></span> Xe Máy Tâm An Nomura.</p><a href="/admin">Quản trị showroom</a></div></footer>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
