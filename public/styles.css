@@ -44,3 +44,33 @@ h1,h2,h3,.bike-name,.detail-info h2,.section-heading h2,.hero h1,.showroom-copy 
 
 @media(max-width:1000px){.detail-modal-card{width:min(760px,calc(100vw - 28px));max-height:calc(100vh - 28px)}.detail-layout{grid-template-columns:1fr}.detail-gallery{padding:20px}.detail-image-stage{height:410px;min-height:410px}.detail-info{padding:30px}.detail-gallery .color-picker{display:none}}
 @media(max-width:720px){.detail-modal-card{width:100vw;max-height:100dvh;border-radius:0}.detail-layout{min-height:0}.detail-gallery{padding:68px 15px 12px}.detail-image-stage{height:320px;min-height:320px;border-radius:18px}.detail-gallery .detail-image-stage img{padding:4px}.detail-thumbs{padding-top:11px}.detail-thumb{flex-basis:58px;height:47px}.detail-photo-note{font-size:10px}.detail-info{padding:22px 15px 38px}.detail-info .eyebrow{margin-top:18px}.detail-info h2{font-size:42px;line-height:.92}.detail-price strong{font-size:31px}.detail-specs{grid-template-columns:repeat(2,minmax(0,1fr));margin:20px 0 15px}.detail-finance{grid-template-columns:1fr;padding:13px}.color-picker{padding:13px;border-radius:15px}.color-choices-detail{gap:7px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.color-choices-detail .color-option{flex:0 0 auto;min-width:76px;height:50px}.detail-form{padding:18px 15px;border-radius:18px}.detail-form h3{font-size:29px}.detail-form-grid{grid-template-columns:1fr}.detail-form .full-span{grid-column:auto}.detail-submit{min-height:52px}.bike-image{height:226px;padding:6px}.bike-card .color-choices{min-height:30px}.color-count{display:none}.brand-assets-grid{grid-template-columns:1fr!important}}
+/* Sửa chữ tiếng Việt bị dính/chồng dòng */
+.hero h1,
+.finance-hero h1,
+.finance-copy h2,
+.section-heading h2,
+.cta h2 {
+  line-height: 1.12 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.finance-hero h1 {
+  padding: 0.06em 0 0.1em;
+}
+
+.finance-hero h1 em {
+  display: block;
+  margin-top: 0.08em;
+}
+
+@media (max-width: 720px) {
+  .hero h1,
+  .finance-hero h1 {
+    line-height: 1.16 !important;
+    letter-spacing: -0.04em !important;
+  }
+
+  .finance-hero h1 {
+    font-size: clamp(2.55rem, 11vw, 3.35rem) !important;
+  }
+}
