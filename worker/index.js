@@ -54,6 +54,10 @@ async function parseJson(request){try{return await request.json();}catch{return 
 function hasRole(session,role){return Boolean(session?.role===role);}
 async function requireSession(request,env){const session=await getSession(request,env);return session||null;}
 async function addColumn(env,table,column,definition){try{const result=await env.DB.prepare(`PRAGMA table_info(${table})`).all();if(!(result.results||[]).some(item=>item.name===column))await env.DB.prepare(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`).run();}catch(cause){if(!String(cause?.message||cause).toLowerCase().includes('duplicate column'))throw cause;}}
+async function optionalRun(env, statement) {
+  try { await env.DB.prepare(statement).run(); }
+  catch (cause) { console.warn('Optional database migration skipped:', String(cause?.message || cause)); }
+}
 async function ensureSchema(env){if(schemaPromise)return schemaPromise;schemaPromise=(async()=>{
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS bikes (
     id INTEGER PRIMARY KEY AUTOINCREMENT, slug TEXT UNIQUE NOT NULL, name TEXT NOT NULL, brand TEXT NOT NULL DEFAULT 'Honda', category TEXT NOT NULL DEFAULT 'new', price INTEGER NOT NULL DEFAULT 0, msrp INTEGER, year INTEGER, mileage INTEGER, engine TEXT, color TEXT, documents TEXT, status TEXT NOT NULL DEFAULT 'in_stock', description TEXT, images TEXT NOT NULL DEFAULT '[]', color_variants TEXT NOT NULL DEFAULT '[]', featured INTEGER NOT NULL DEFAULT 0, sort_order INTEGER NOT NULL DEFAULT 0, installment_from INTEGER NOT NULL DEFAULT 0, bad_debt_down_payment INTEGER NOT NULL DEFAULT 0, show_price INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -65,7 +69,7 @@ async function ensureSchema(env){if(schemaPromise)return schemaPromise;schemaPro
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS site_settings (id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   await env.DB.prepare('INSERT OR IGNORE INTO site_settings (id,data) VALUES (1,?)').bind(JSON.stringify(SETTINGS_DEFAULTS)).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS leads (id INTEGER PRIMARY KEY AUTOINCREMENT,type TEXT NOT NULL DEFAULT 'consultation',name TEXT NOT NULL,phone TEXT NOT NULL,bike_name TEXT,down_payment TEXT,credit_status TEXT,note TEXT,status TEXT NOT NULL DEFAULT 'new',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
-  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at DESC)').run();
+  await optionalRun(env,'CREATE INDEX IF NOT EXISTS idx_leads_created ON leads(created_at DESC)');
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS promotions (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,description TEXT NOT NULL,image_url TEXT,active INTEGER NOT NULL DEFAULT 1,sort_order INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS accessories (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,category TEXT NOT NULL DEFAULT 'Phụ kiện',price INTEGER NOT NULL DEFAULT 0,description TEXT,image_url TEXT,active INTEGER NOT NULL DEFAULT 1,sort_order INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS staff_accounts (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,username TEXT UNIQUE NOT NULL,password_hash TEXT NOT NULL,active INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
@@ -76,9 +80,9 @@ async function ensureSchema(env){if(schemaPromise)return schemaPromise;schemaPro
   await addColumn(env,'conversations','assigned_staff_id','INTEGER');
   await addColumn(env,'chat_messages','sender_name','TEXT');
   await addColumn(env,'chat_messages','staff_id','INTEGER');
-  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chat_messages_conversation ON chat_messages(conversation_id,id)').run();
+  await optionalRun(env,'CREATE INDEX IF NOT EXISTS idx_chat_messages_conversation ON chat_messages(conversation_id,id)');
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS analytics_visits (id INTEGER PRIMARY KEY AUTOINCREMENT,day TEXT NOT NULL,visitor_hash TEXT NOT NULL,path TEXT,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
-  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_analytics_day ON analytics_visits(day)').run();
+  await optionalRun(env,'CREATE INDEX IF NOT EXISTS idx_analytics_day ON analytics_visits(day)');
   // V9 workflow: status, assignee, audit log. ALTERs are safe for existing D1 databases.
   await addColumn(env,'leads','assigned_staff_id','INTEGER');
   await addColumn(env,'leads','assigned_staff_name','TEXT');
@@ -98,7 +102,7 @@ async function ensureSchema(env){if(schemaPromise)return schemaPromise;schemaPro
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`).run();
-  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_policy_articles_active ON policy_articles(active,sort_order,id)').run();
+  await optionalRun(env,'CREATE INDEX IF NOT EXISTS idx_policy_articles_active ON policy_articles(active,sort_order,id)');
   const defaultPolicies=[
     ['bao-hanh','Chính sách bảo hành','Điều kiện, phạm vi và cách nhận hỗ trợ bảo hành tại Tâm An.','Tâm An hỗ trợ kiểm tra tình trạng xe và hướng dẫn bảo hành theo chính sách áp dụng cho từng sản phẩm.\n\nKhách vui lòng giữ giấy tờ mua xe và liên hệ hotline để được hỗ trợ nhanh.'],
     ['huong-dan-mua-hang','Hướng dẫn mua hàng','Quy trình chọn xe, đặt xe và nhận xe tại showroom hoặc giao tận nơi.','Bước 1: Chọn mẫu xe và màu xe phù hợp.\nBước 2: Liên hệ Tâm An để kiểm tra tình trạng xe.\nBước 3: Đặt lịch xem xe hoặc yêu cầu giao tận nơi.'],
@@ -118,11 +122,11 @@ async function ensureSchema(env){if(schemaPromise)return schemaPromise;schemaPro
     details TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`).run();
-  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_leads_status_created ON leads(status,created_at DESC)').run();
-  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_leads_assignee ON leads(assigned_staff_id,created_at DESC)').run();
-  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_conversations_status_updated ON conversations(status,last_message_at DESC)').run();
-  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_system_logs_created ON system_logs(created_at DESC)').run();
-  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS ai_rate_limits (visitor_id TEXT NOT NULL, day TEXT NOT NULL, count INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(visitor_id,day))`).run();
+  await optionalRun(env,'CREATE INDEX IF NOT EXISTS idx_leads_status_created ON leads(status,created_at DESC)');
+  await optionalRun(env,'CREATE INDEX IF NOT EXISTS idx_leads_assignee ON leads(assigned_staff_id,created_at DESC)');
+  await optionalRun(env,'CREATE INDEX IF NOT EXISTS idx_conversations_status_updated ON conversations(status,last_message_at DESC)');
+  await optionalRun(env,'CREATE INDEX IF NOT EXISTS idx_system_logs_created ON system_logs(created_at DESC)');
+  await optionalRun(env,`CREATE TABLE IF NOT EXISTS ai_rate_limits (visitor_id TEXT NOT NULL, day TEXT NOT NULL, count INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(visitor_id,day))`);
 })().catch(cause=>{schemaPromise=undefined;throw cause;});return schemaPromise;}
 async function getSettings(env){await ensureSchema(env);const row=await env.DB.prepare('SELECT data FROM site_settings WHERE id=1').first();try{return {...SETTINGS_DEFAULTS,...(row?JSON.parse(row.data):{})};}catch{return {...SETTINGS_DEFAULTS};}}
 function normalizeSettings(payload={}){const settings={...SETTINGS_DEFAULTS};for(const key of Object.keys(SETTINGS_DEFAULTS))settings[key]=cleanText(payload[key],SETTINGS_DEFAULTS[key]);for(const color of ['primary_color','paper_color','dark_color'])if(!/^#[0-9a-f]{6}$/i.test(settings[color]))settings[color]=SETTINGS_DEFAULTS[color];if(!['Be Vietnam Pro','Plus Jakarta Sans','Sora','Manrope','DM Sans','Montserrat','Inter','Lexend','Urbanist','Nunito Sans','Archivo'].includes(settings.font_family))settings.font_family=SETTINGS_DEFAULTS.font_family;if(!['Barlow Condensed','Roboto Condensed','Oswald','Barlow','Montserrat','Sora','Space Grotesk','Be Vietnam Pro','Lexend','Urbanist'].includes(settings.heading_font))settings.heading_font=SETTINGS_DEFAULTS.heading_font;settings.ai_enabled=safeBool(payload.ai_enabled,true)?'1':'0';settings.ai_auto_reply=safeBool(payload.ai_auto_reply,true)?'1':'0';if(!['gemini','openai_compatible','webhook'].includes(settings.ai_provider))settings.ai_provider='gemini';settings.ai_daily_limit=String(Math.max(1,Math.min(50,nullableNumber(payload.ai_daily_limit)||12)));settings.ai_model=cleanText(payload.ai_model,SETTINGS_DEFAULTS.ai_model).slice(0,120);settings.ai_bot_name=cleanText(payload.ai_bot_name,SETTINGS_DEFAULTS.ai_bot_name).slice(0,80);settings.ai_welcome=cleanText(payload.ai_welcome,SETTINGS_DEFAULTS.ai_welcome).slice(0,600);settings.ai_handover_keywords=cleanText(payload.ai_handover_keywords,SETTINGS_DEFAULTS.ai_handover_keywords).slice(0,700);settings.ai_handover_message=cleanText(payload.ai_handover_message,SETTINGS_DEFAULTS.ai_handover_message).slice(0,800);settings.ai_knowledge=cleanText(payload.ai_knowledge,SETTINGS_DEFAULTS.ai_knowledge).slice(0,5000);return settings;}
@@ -286,6 +290,7 @@ async function handleApi(request,env,url){const path=url.pathname;
   if(path==='/api/auth/login'&&request.method==='POST'){const body=await parseJson(request);const username=cleanText(body?.username).toLowerCase();const password=String(body?.password||'');if(!password)return error('Vui lòng nhập mật khẩu.',401);if(!username&&env.ADMIN_PASSWORD&&password===env.ADMIN_PASSWORD){const token=await createSession(env.SESSION_SECRET,{role:'owner',name:'Chủ cửa hàng'});return json({ok:true,session:{authenticated:true,role:'owner',name:'Chủ cửa hàng'}},{headers:{'set-cookie':`tam_an_admin=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=43200`}});}if(username){await ensureSchema(env);const staff=await env.DB.prepare('SELECT * FROM staff_accounts WHERE username=? AND active=1').bind(username).first();if(staff&&staff.password_hash===await passwordHash(password,env.SESSION_SECRET)){const token=await createSession(env.SESSION_SECRET,{role:'staff',name:staff.name,staff_id:staff.id});return json({ok:true,session:{authenticated:true,role:'staff',name:staff.name}},{headers:{'set-cookie':`tam_an_admin=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=43200`}});}}return error('Tên đăng nhập hoặc mật khẩu không đúng.',401);}
   if(path==='/api/auth/logout'&&request.method==='POST')return json({ok:true},{headers:{'set-cookie':'tam_an_admin=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0'}});
   if(path==='/api/auth/me'&&request.method==='GET'){const session=await getSession(request,env);return json({ok:true,session:session?{authenticated:true,role:session.role,name:session.name}: {authenticated:false}});}
+  if(path==='/api/health'&&request.method==='GET'){ try { await ensureSchema(env); return json({ok:true,status:'ready'}); } catch (cause) { return json({ok:false,status:'database_error',error:String(cause?.message||cause)},{status:500}); } }
   await ensureSchema(env);
   const publicResult=await handlePublic(request,env,url);if(publicResult)return publicResult;
   if(path.startsWith('/api/admin/'))return handleAdmin(request,env,url);
