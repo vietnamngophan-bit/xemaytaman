@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "xe-may-tam-an-nomura",
+  "name": "xemaytaman",
   "main": "worker/index.js",
   "compatibility_date": "2026-06-26",
   "compatibility_flags": ["nodejs_compat"],
