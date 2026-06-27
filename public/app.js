@@ -176,7 +176,32 @@ function openBikeDetail(id) {
   trackMarketingEvent('ViewContent',{content_name:bike.name,content_type:'product'});
   openModal('detail-modal');
 }
-async function loadPublic() { const [settings, bikes, promos, accessories, policies] = await Promise.all([api('/api/settings'), api('/api/bikes'), api('/api/promotions'), api('/api/accessories'), api('/api/policies')]); state.settings = settings.settings; state.bikes = bikes.bikes; state.promotions = promos.promotions; state.accessories = accessories.accessories; state.policies=policies.policies||[]; applySettings(); renderBikes(); renderPromotions(); renderAccessories(); renderPolicies(); trackVisit(); }
+function showPublicLoadError(message) {
+  const text = esc(message || 'Dữ liệu tạm thời chưa tải được. Vui lòng thử lại sau ít phút.');
+  const targets = [
+    ['#bike-grid', 'Kho xe'], ['#promo-list', 'Khuyến mại'], ['#accessory-list', 'Phụ kiện'], ['#policy-list', 'Chính sách']
+  ];
+  targets.forEach(([selector, label]) => {
+    const node = $(selector); if (!node) return;
+    if (!node.children.length || node.querySelector('.loading-card')) node.innerHTML = `<div class="empty-card">${label} đang tạm thời chưa tải được.<br><small>${text}</small></div>`;
+  });
+}
+async function loadPublic() {
+  const requests = await Promise.allSettled([
+    api('/api/settings'), api('/api/bikes'), api('/api/promotions'), api('/api/accessories'), api('/api/policies')
+  ]);
+  const [settings, bikes, promos, accessories, policies] = requests;
+  if (settings.status === 'fulfilled') { state.settings = settings.value.settings || {}; applySettings(); }
+  else { applySettings(); }
+  state.bikes = bikes.status === 'fulfilled' ? (bikes.value.bikes || []) : [];
+  state.promotions = promos.status === 'fulfilled' ? (promos.value.promotions || []) : [];
+  state.accessories = accessories.status === 'fulfilled' ? (accessories.value.accessories || []) : [];
+  state.policies = policies.status === 'fulfilled' ? (policies.value.policies || []) : [];
+  renderBikes(); renderPromotions(); renderAccessories(); renderPolicies();
+  const failed = requests.find(item => item.status === 'rejected');
+  if (failed) showPublicLoadError(failed.reason?.message);
+  trackVisit();
+}
 async function trackVisit() { try { let visitor = localStorage.getItem('tam_an_visitor'); if (!visitor) { visitor = crypto.randomUUID(); localStorage.setItem('tam_an_visitor', visitor); } await fetch('/api/analytics/view',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ path: location.pathname, visitor_id: visitor })}); } catch {} }
 function bindPublic() {
   $('[data-menu-toggle]')?.addEventListener('click', () => $('#main-nav').classList.toggle('open'));
@@ -386,4 +411,13 @@ async function initAdmin() {
   $('#login-form').addEventListener('submit',login);$('#logout-button')?.addEventListener('click',logout);$('#add-bike-button')?.addEventListener('click',()=>openBikeForm());$('#bike-form')?.addEventListener('submit',saveBike);$('#image-input')?.addEventListener('change',event=>uploadBikeImages(event.target.files));$('#add-color-variant')?.addEventListener('click',addColorVariant);$('#color-variants')?.addEventListener('click',handleColorVariantClick);$('#color-variants')?.addEventListener('change',handleColorVariantChange);$('#settings-form')?.addEventListener('submit',saveSettings);$('#ai-test-button')?.addEventListener('click',testAiProvider);$('#settings-image-input')?.addEventListener('change',event=>uploadSettingImage(event.target.files?.[0]));$('#settings-logo-input')?.addEventListener('change',event=>uploadSettingAsset(event.target.files?.[0],'logo_image','Đã tải logo. Bấm Lưu thay đổi website để áp dụng.'));$('#settings-favicon-input')?.addEventListener('change',event=>uploadSettingAsset(event.target.files?.[0],'favicon_image','Đã tải icon tab. Bấm Lưu thay đổi website để áp dụng.'));$('#settings-showroom-input')?.addEventListener('change',event=>uploadSettingAsset(event.target.files?.[0],'showroom_image','Đã tải ảnh showroom. Bấm Lưu thay đổi website để áp dụng.'));$('#add-policy-button')?.addEventListener('click',()=>openPolicyForm());$('#policy-form')?.addEventListener('submit',savePolicy);$('#refresh-leads')?.addEventListener('click',loadLeads);$('#lead-filters')?.addEventListener('change',loadLeads);$('#lead-filters')?.addEventListener('reset',()=>setTimeout(loadLeads));$('#add-promo-button')?.addEventListener('click',()=>openPromoForm());$('#promo-form')?.addEventListener('submit',savePromo);$('#promo-image-input')?.addEventListener('change',event=>uploadSingleToField(event.target.files?.[0],'#promo-form [name="image_url"]'));$('#add-accessory-button')?.addEventListener('click',()=>openAccessoryForm());$('#accessory-form')?.addEventListener('submit',saveAccessory);$('#accessory-image-input')?.addEventListener('change',event=>uploadSingleToField(event.target.files?.[0],'#accessory-form [name="image_url"]'));$('#add-staff-button')?.addEventListener('click',()=>openModal('staff-modal'));$('#staff-form')?.addEventListener('submit',saveStaff);$('#refresh-analytics')?.addEventListener('click',loadAnalytics);$('#refresh-chats')?.addEventListener('click',loadChats);$('#chat-filters')?.addEventListener('change',()=>{state.currentChat=null;loadChats();});$('#chat-filters')?.addEventListener('reset',()=>setTimeout(()=>{state.currentChat=null;loadChats();}));$('#refresh-logs')?.addEventListener('click',loadSystemLogs);$('#log-filters')?.addEventListener('change',loadSystemLogs);$('#log-filters')?.addEventListener('reset',()=>setTimeout(loadSystemLogs));$('#admin-chat-form')?.addEventListener('submit',replyChat);$('#chat-ai-suggest')?.addEventListener('click',suggestAiReply);$('#chat-sound-button')?.addEventListener('click',armChatBell);$$('[data-modal-close]').forEach(el=>el.addEventListener('click',()=>closeModal('bike-modal')));$$('[data-promo-close]').forEach(el=>el.addEventListener('click',()=>closeModal('promo-modal')));$$('[data-accessory-close]').forEach(el=>el.addEventListener('click',()=>closeModal('accessory-modal')));$$('[data-policy-close]').forEach(el=>el.addEventListener('click',()=>closeModal('policy-modal')));$$('[data-staff-close]').forEach(el=>el.addEventListener('click',()=>closeModal('staff-modal')));$$('.admin-tab').forEach(button=>button.addEventListener('click',()=>switchAdminView(button.dataset.adminView)));
 }
 
-(async function init(){ const mode=getPathMode(); if(mode==='admin'){await initAdmin();return;} if(mode==='finance'){$('#storefront').hidden=true;$('#finance-page').hidden=false;} await loadPublic(); bindPublic(); if(mode==='finance')$('#chat-widget').hidden=true; setInterval(refreshVisitorChat,12000); })();
+(async function init(){
+  const mode=getPathMode();
+  if(mode==='admin') { await initAdmin(); return; }
+  if(mode==='finance') { $('#storefront').hidden=true; $('#finance-page').hidden=false; }
+  // Điều hướng và menu phải hoạt động ngay cả khi API/D1 đang chậm hoặc lỗi.
+  bindPublic();
+  try { await loadPublic(); } catch (error) { showPublicLoadError(error?.message); }
+  if(mode==='finance') $('#chat-widget').hidden=true;
+  setInterval(refreshVisitorChat,12000);
+})();
